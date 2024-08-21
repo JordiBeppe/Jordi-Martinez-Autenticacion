@@ -13,9 +13,55 @@ const getState = ({ getStore, getActions, setStore }) => {
 					background: "white",
 					initial: "white"
 				}
-			]
+			],
+			
+			token: localStorage.getItem("token") || null
 		},
 		actions: {
+
+			signUp: async (user) => {
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/user`, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify(user)
+					})
+					return response.status
+
+				} catch (error) {
+					console.log(error)
+				}
+			},
+
+
+			login: async (user) => {
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/login`, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify(user)
+					})
+					const data = await response.json()
+					if (response.status == 200) {
+						setStore({
+							token: data.token
+						})
+						localStorage.setItem("token", data.token)
+						return true
+					} else {
+						return false
+					}
+
+				} catch (error) {
+					console.log(error)
+				}
+			},
+
+			
 			// Use getActions to call a function within a fuction
 			exampleFunction: () => {
 				getActions().changeColor(0, "green");
@@ -47,6 +93,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 				//reset the global store
 				setStore({ demo: demo });
 			}
+
+
+			
 		}
 	};
 };

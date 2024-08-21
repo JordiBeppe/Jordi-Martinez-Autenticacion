@@ -1,4 +1,7 @@
 from flask import jsonify, url_for
+from werkzeug.security import generate_password_hash, check_password_hash
+import os
+
 
 class APIException(Exception):
     status_code = 400
@@ -14,6 +17,13 @@ class APIException(Exception):
         rv = dict(self.payload or ())
         rv['message'] = self.message
         return rv
+
+
+def set_password(password, salt):
+    return generate_password_hash(f"{password}{salt}")
+
+
+
 
 def has_no_empty_params(rule):
     defaults = rule.defaults if rule.defaults is not None else ()
